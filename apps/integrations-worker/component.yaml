@@ -84,3 +84,4 @@ spec:
 
 # ci: re-trigger deploy (batch C — integrations + api-edge gateway, 20260622T141448Z)
 # orun: redeploy 04-workers 20260923T043646Z
+# orun: redeploy AS1 — trap-16 D1 fix (events/membership repositories) + policy/staff permissions, 20260923T115754Z

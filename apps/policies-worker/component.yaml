@@ -10,6 +10,8 @@ spec:
   domain: starter-runtime
   path: apps/policies-worker
   dependsOn:
+    # db-migrate first, so 200_policies_core is applied before code that reads it.
+    - component: db-migrate
     - component: membership-worker
     - component: policy-worker
     - component: cloudflare-r2
@@ -19,8 +21,6 @@ spec:
   secretEnv:
     WIRING_CLOUDFLARE_D1_STAGE: "secret://ws_ZHB3EG27/ackstack/stage/WIRING_CLOUDFLARE_D1"
     WIRING_CLOUDFLARE_D1_PROD: "secret://ws_ZHB3EG27/ackstack/prod/WIRING_CLOUDFLARE_D1"
-    WIRING_CLOUDFLARE_R2_STAGE: "secret://ws_ZHB3EG27/ackstack/stage/WIRING_CLOUDFLARE_R2"
-    WIRING_CLOUDFLARE_R2_PROD: "secret://ws_ZHB3EG27/ackstack/prod/WIRING_CLOUDFLARE_R2"
 
   subscribe:
     environments:
@@ -53,7 +53,9 @@ spec:
     turboFilter: "@saas/policies-worker"
     wranglerConfig: wrangler.jsonc
     wranglerTemplate: wrangler.template.jsonc
-    wiringComponents: "cloudflare-d1,cloudflare-r2"
+    # The R2 bucket binds by NAME, which cloudflare-r2 derives deterministically,
+    # so only D1 needs a wiring document.
+    wiringComponents: "cloudflare-d1"
     wiringEnvs: "stage,prod"
     wiringFixture: wiring.fixture.json
     installCommand: pnpm install --frozen-lockfile

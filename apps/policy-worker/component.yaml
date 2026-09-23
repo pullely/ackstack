@@ -53,3 +53,4 @@ spec:
     runtime: cloudflare
 # ci: trigger full-component verification (orun v2.12.0 upgrade — PR #183)
 # orun: redeploy 04-workers 20260923T043646Z
+# orun: redeploy AS1 — trap-16 D1 fix (events/membership repositories) + policy/staff permissions, 20260923T115754Z

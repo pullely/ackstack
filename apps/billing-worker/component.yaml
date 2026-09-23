@@ -77,3 +77,4 @@ spec:
     runtime: cloudflare
 # ci: re-trigger deploy (batch A — runner-starvation recovery 20260622T115650Z)
 # orun: redeploy 04-workers-restore 20260923T050456Z
+# orun: redeploy AS1 — trap-16 D1 fix (events/membership repositories) + policy/staff permissions, 20260923T115754Z

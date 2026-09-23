@@ -29,10 +29,12 @@
           "database_id": "@@wiring(cloudflare-d1/stage:d1_database_id)@@"
         }
       ],
+      // AS1: policy documents. Bound by name — cloudflare-r2 names the bucket
+      // deterministically as ackstack-policy-docs-<env>.
       "r2_buckets": [
         {
           "binding": "POLICY_DOCS",
-          "bucket_name": "@@wiring(cloudflare-r2/stage:policy_docs_bucket_name)@@"
+          "bucket_name": "ackstack-policy-docs-stage"
         }
       ],
       "services": [
@@ -58,10 +60,12 @@
           "database_id": "@@wiring(cloudflare-d1/prod:d1_database_id)@@"
         }
       ],
+      // AS1: policy documents. Bound by name — cloudflare-r2 names the bucket
+      // deterministically as ackstack-policy-docs-<env>.
       "r2_buckets": [
         {
           "binding": "POLICY_DOCS",
-          "bucket_name": "@@wiring(cloudflare-r2/prod:policy_docs_bucket_name)@@"
+          "bucket_name": "ackstack-policy-docs-prod"
         }
       ],
       "services": [

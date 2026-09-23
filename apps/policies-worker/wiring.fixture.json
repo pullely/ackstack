@@ -4,11 +4,5 @@
   },
   "cloudflare-d1/prod": {
     "d1_database_id": "00000000000000000000000000000003"
-  },
-  "cloudflare-r2/stage": {
-    "policy_docs_bucket_name": "ackstack-policy-docs-stage"
-  },
-  "cloudflare-r2/prod": {
-    "policy_docs_bucket_name": "ackstack-policy-docs-prod"
   }
 }
