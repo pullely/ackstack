@@ -1,0 +1,13 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: AS-1
+spec:
+  goal: The Ackstack epic's five documents are on main and attached to the epic, so every later milestone has a thesis, a design and a risk register to land against.
+  affects:
+    - specs/epics/ackstack-acknowledgments
+    - tasks
+  doneWhen:
+    - README.md, design.md, implementation-plan.md, risks-and-open-questions.md and IMPLEMENTATION-STATUS.md are on main under specs/epics/ackstack-acknowledgments
+    - orun spec list --epic ackstack-acknowledgments shows all five
+  gates: []
