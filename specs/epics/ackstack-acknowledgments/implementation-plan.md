@@ -72,7 +72,7 @@ one button, then a receipt. Every step emits its audit event.
 - the assignment detail surface shows the live tally and can remind everyone
   still pending
 
-## AS3 — the re-collection calendar
+## AS3 — the re-collection calendar ✅
 
 Ackstack starts doing the thing nobody remembers to do. A third migration adds
 `policies_rules`, seeded per organization with New York annual for harassment

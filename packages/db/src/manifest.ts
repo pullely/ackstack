@@ -201,5 +201,14 @@ export const manifest: MigrationManifest = {
       description:
         "Assignment rounds and acknowledgment requests (AS2) — one round per policy version and audience, one row per member of staff holding only the SHA-256 of their link token, recording the version, timestamp and IP on confirmation",
     },
+    {
+      id: "220_policies_rules",
+      context: "policies",
+      path: "220_policies_rules/up.sql",
+      checksum:
+        "89396ae01bdb7dfed8ec204a32a1735e9377d288bc8cd3f5540d8e8a3459c65a",
+      description:
+        "The re-collection calendar (AS3) — per-organization intervals by work state and policy category (NY 12, NY workplace violence 12, IL 12, CA 24 shipped as defaults), read by the nightly round",
+    },
   ],
 };

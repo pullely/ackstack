@@ -25,10 +25,14 @@ const ALLOWED_HEADERS = [
   "x-request-id",
   "traceparent",
   "idempotency-key",
+  // AS1: the uploader's filename rides beside a policy document PUT.
+  "x-document-filename",
 ].join(", ");
 
 const EXPOSED_HEADERS = [
   "x-request-id",
+  // AS3: the CSV exports name their file.
+  "content-disposition",
 ].join(", ");
 
 const ALLOWED_METHODS = "GET, POST, PUT, PATCH, DELETE, OPTIONS";

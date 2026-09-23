@@ -29,3 +29,11 @@ export type {
   RoundsRepository,
 } from "./rounds.js";
 export { createRoundsRepository } from "./rounds.js";
+export type { RecollectionRule, RecollectionCandidate, RulesRepository } from "./rules.js";
+export {
+  createRulesRepository,
+  DEFAULT_RULES,
+  governingRule,
+  addMonths,
+  isDue,
+} from "./rules.js";

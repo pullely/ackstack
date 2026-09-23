@@ -22,6 +22,8 @@ import {
   handleRemindAssignment,
 } from "./handlers/assignments.js";
 import { handleGetAckDocument, handleGetAckLink, handlePostAckLink } from "./handlers/ack-link.js";
+import { handleListRules, handlePutRule } from "./handlers/rules.js";
+import { handleExportPolicy, handleExportStaff } from "./handlers/export.js";
 import { notFound, methodNotAllowed, errorResponse } from "./http.js";
 import {
   generateRequestId,
@@ -71,6 +73,10 @@ const ORG_ASSIGNMENTS_RE = /^\/v1\/organizations\/([^/]+)\/assignments$/;
 const ORG_ASSIGNMENT_ID_RE = /^\/v1\/organizations\/([^/]+)\/assignments\/([^/]+)$/;
 const ORG_ASSIGNMENT_REMIND_RE = /^\/v1\/organizations\/([^/]+)\/assignments\/([^/]+)\/remind$/;
 const ORG_ACKNOWLEDGMENTS_RE = /^\/v1\/organizations\/([^/]+)\/acknowledgments$/;
+const ORG_RULES_RE = /^\/v1\/organizations\/([^/]+)\/rules$/;
+const ORG_RULE_RE = /^\/v1\/organizations\/([^/]+)\/rules\/([^/]+)\/([^/]+)$/;
+const ORG_POLICY_EXPORT_RE = /^\/v1\/organizations\/([^/]+)\/policies\/([^/]+)\/export$/;
+const ORG_STAFF_EXPORT_RE = /^\/v1\/organizations\/([^/]+)\/staff\/([^/]+)\/export$/;
 // The public lane: no actor, the token is the credential (api-edge ack-facade).
 const ACK_RE = /^\/v1\/ack\/([^/]+)$/;
 const ACK_DOCUMENT_RE = /^\/v1\/ack\/([^/]+)\/document$/;
@@ -94,6 +100,48 @@ export async function route(request: Request, env: Env): Promise<Response> {
       if (request.method === "GET") return handleGetAckLink(env, requestId, ackMatch[1]!);
       if (request.method === "POST") return handlePostAckLink(request, env, requestId, ackMatch[1]!);
       return methodNotAllowed(requestId);
+    }
+
+    const rulesMatch = url.pathname.match(ORG_RULES_RE);
+    if (rulesMatch) {
+      const orgUuid = parseOrgPublicId(rulesMatch[1]!);
+      if (!orgUuid) return notFound(requestId, url.pathname);
+      if (request.method !== "GET") return methodNotAllowed(requestId);
+      const actor = resolveActor(request);
+      if (!actor) return unauthenticated(requestId);
+      return handleListRules(env, requestId, actor, orgUuid);
+    }
+
+    const ruleMatch = url.pathname.match(ORG_RULE_RE);
+    if (ruleMatch) {
+      const orgUuid = parseOrgPublicId(ruleMatch[1]!);
+      if (!orgUuid) return notFound(requestId, url.pathname);
+      if (request.method !== "PUT") return methodNotAllowed(requestId);
+      const actor = resolveActor(request);
+      if (!actor) return unauthenticated(requestId);
+      return handlePutRule(request, env, requestId, actor, orgUuid, ruleMatch[2]!, ruleMatch[3]!);
+    }
+
+    const policyExportMatch = url.pathname.match(ORG_POLICY_EXPORT_RE);
+    if (policyExportMatch) {
+      const orgUuid = parseOrgPublicId(policyExportMatch[1]!);
+      const policyUuid = parsePolicyPublicId(policyExportMatch[2]!);
+      if (!orgUuid || !policyUuid) return notFound(requestId, url.pathname);
+      if (request.method !== "GET") return methodNotAllowed(requestId);
+      const actor = resolveActor(request);
+      if (!actor) return unauthenticated(requestId);
+      return handleExportPolicy(env, requestId, actor, orgUuid, policyUuid);
+    }
+
+    const staffExportMatch = url.pathname.match(ORG_STAFF_EXPORT_RE);
+    if (staffExportMatch) {
+      const orgUuid = parseOrgPublicId(staffExportMatch[1]!);
+      const staffUuid = parseStaffPublicId(staffExportMatch[2]!);
+      if (!orgUuid || !staffUuid) return notFound(requestId, url.pathname);
+      if (request.method !== "GET") return methodNotAllowed(requestId);
+      const actor = resolveActor(request);
+      if (!actor) return unauthenticated(requestId);
+      return handleExportStaff(env, requestId, actor, orgUuid, staffUuid);
     }
 
     const remindMatch = url.pathname.match(ORG_ASSIGNMENT_REMIND_RE);

@@ -322,6 +322,10 @@ export type {
 } from "@saas/contracts/auth";
 
 export type {
+  PublicRecollectionRule,
+  ListRulesResponse,
+  PutRuleRequest,
+  PutRuleResponse,
   PublicAssignment,
   PublicAcknowledgment,
   AssignmentAudience,

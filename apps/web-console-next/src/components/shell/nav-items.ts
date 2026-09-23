@@ -69,6 +69,7 @@ export function buildNavSections(scope: NavScope, soloMode: boolean = SOLO_MODE)
             { href: `${orgBase}/policies`, label: "Policies", icon: "FileText" },
             { href: `${orgBase}/staff`, label: "Staff", icon: "Users" },
             { href: `${orgBase}/assignments`, label: "Assignments", icon: "Send" },
+            { href: `${orgBase}/calendar`, label: "Calendar", icon: "CalendarClock" },
             // Solo: projects & usage/quota are platform plumbing the B2C user
             // never sees; their surfaces collapse to the Settings (Account) panel.
             { href: `${orgBase}/settings`, label: "Settings", icon: "Settings", subPanel: true },
@@ -77,6 +78,7 @@ export function buildNavSections(scope: NavScope, soloMode: boolean = SOLO_MODE)
             { href: `${orgBase}/policies`, label: "Policies", icon: "FileText" },
             { href: `${orgBase}/staff`, label: "Staff", icon: "Users" },
             { href: `${orgBase}/assignments`, label: "Assignments", icon: "Send" },
+            { href: `${orgBase}/calendar`, label: "Calendar", icon: "CalendarClock" },
             { href: `${orgBase}/projects`, label: "Projects", icon: "FolderKanban" },
             { href: `${orgBase}/usage`, label: "Usage & quota", icon: "Gauge" },
             // Opens the dedicated settings panel — flagged so the renderer shows a ›.
