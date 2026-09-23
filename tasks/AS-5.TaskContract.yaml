@@ -1,0 +1,12 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: AS-5
+spec:
+  goal: Production never returns acknowledgment links inline — policies-worker's prod DEBUG_DELIVERY matches the baseline's identity and membership workers (false) — and the epic's docs record the shipped state.
+  affects:
+    - default/ackstack/policies-worker
+  doneWhen:
+    - policies-worker prod runs DEBUG_DELIVERY=false like identity-worker and membership-worker prod
+    - README status is Shipped with Shipped as filled in, and IMPLEMENTATION-STATUS says which environment runs the inline-delivery profile
+  gates: []
