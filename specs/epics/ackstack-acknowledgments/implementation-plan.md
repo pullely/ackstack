@@ -5,7 +5,7 @@ request, each pull request landed with `orun pr land`. A milestone is marked
 ✅ here when its "done when" list is true, and recorded in
 `IMPLEMENTATION-STATUS.md`.
 
-## AS0 — the spec
+## AS0 — the spec ✅
 
 This doc set, merged to `main` and attached to the epic with `orun spec push`.
 
@@ -13,7 +13,7 @@ This doc set, merged to `main` and attached to the epic with `orun spec push`.
 - the five documents are on `main`
 - `orun spec list --epic ackstack-acknowledgments` shows them
 
-## AS1 — the register and the roster
+## AS1 — the register and the roster ✅
 
 The `policies` bounded context comes into existence. One D1 migration adds
 `policies_policies`, `policies_versions` and `policies_staff` with their
@@ -31,8 +31,9 @@ milestone is invisible to staff.
 
 **Done when**
 - the migration is applied on stage and prod and `packages/db` lists it
-- the R2 bucket exists on stage and prod and its id resolves into the worker's
-  `wrangler.jsonc` through a `@@wiring(...)@@` token, with no id committed
+- the R2 bucket exists on stage and prod and the worker binds it by its
+  deterministic name, with no id committed (as built: by name, not a wiring
+  token — see IMPLEMENTATION-STATUS.md)
 - `POST` then `GET /v1/organizations/{org}/policies` round-trips on both
   `https://ackstack-api-edge-stage.nexo-7be.workers.dev` and `…-prod…`
 - a PDF `PUT` to `.../versions/{pov}/document` comes back byte-for-byte from
