@@ -1,0 +1,10 @@
+{
+  "reponame": "ackstack",
+  "productname": "Ackstack",
+  "productdomain": "ackstack.app",
+  "subdomain": "nexo-7be",
+  "orunWorkspace": "ws_ZHB3EG27",
+  "githuborg": "pullely",
+  "epicSlug": "infra-baselining",
+  "domain": false
+}
