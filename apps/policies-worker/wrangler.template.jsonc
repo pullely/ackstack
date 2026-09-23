@@ -70,10 +70,9 @@
         "ENVIRONMENT": "prod",
         // AS2: the emailed link opens the console's public /ack/<token> page.
         "ACK_LINK_BASE_URL": "https://ackstack-web-console-next-prod.nexo-7be.workers.dev",
-        // The baseline's inline-delivery profile (identity-worker returns login
-        // codes inline under the same flag): created links are also returned
-        // to the admin who sent them.
-        "DEBUG_DELIVERY": "true"
+        // Production matches identity-worker and membership-worker: no inline
+        // delivery. Links reach staff only by email.
+        "DEBUG_DELIVERY": "false"
       },
       "d1_databases": [
         {

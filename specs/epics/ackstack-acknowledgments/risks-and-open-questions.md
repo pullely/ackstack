@@ -122,11 +122,14 @@ sends with Cloudflare Email Service from `no-reply@mail.ackstack.app`. That
 needs the `ackstack.app` domain on the account with DKIM/SPF verified, and
 we do not hold it — a credential-shaped gap, not code. Until it exists the
 worker falls back or records `notification.failed`, and every other part of
-the flow works. Mitigation in place: stage and prod run the baseline's
+the flow works. Mitigation on stage only: it runs the baseline's
 `DEBUG_DELIVERY=true` profile, under which the admin who sends a round gets
-the links back and can hand them out, and the round's detail view shows who
-is still pending. Turning it off is a one-line var change once the domain is
-verified.
+the links back, which is how the flow was verified end to end. Production
+runs `DEBUG_DELIVERY=false` like the baseline's identity worker, so in prod
+**both the staff request email and the admin's own magic-link sign-in depend
+on this domain** — until it is verified, prod can be verified only on its
+unauthenticated surface (health, `404 ack_link_invalid`, `401` on org
+routes) plus the stage run of the identical code.
 
 ## AS-J — large rounds are sent over several invocations (ACCEPTED)
 

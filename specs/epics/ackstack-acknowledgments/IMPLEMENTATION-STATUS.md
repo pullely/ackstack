@@ -9,6 +9,30 @@ the code departed from `design.md`.
 | AS1 — the register and the roster | ✅ | AS-2 | #10 |
 | AS2 — assign, send, acknowledge | ✅ | AS-3 | #11 |
 | AS3 — the re-collection calendar | ✅ | AS-4 | #12 |
+| AS3 follow-up — prod delivery profile, shipped record | ✅ | AS-5 | #13 |
+
+## Verified live (2026-09-23)
+
+- **Stage**, end to end through `https://ackstack-api-edge-stage.nexo-7be.workers.dev`
+  with a scripted sign-in: a PDF `PUT` comes back byte-for-byte with its
+  recorded SHA-256 as the `ETag`; publish allocates v1; a second `PUT` is
+  `409 version_immutable`; an empty version is `409 version_empty`; a roster
+  re-upload of the same email updates in place; organization create works
+  (the D1 fix); an assignment to `{ states: ["NY"] }` matches exactly the two
+  NY staff; the link opens with no login, confirms once with version, time and
+  IP, replays as `409 ack_already_recorded`, and a junk token is
+  `404 ack_link_invalid`; `assignment.created`, `acknowledgment.sent` and
+  `acknowledgment.recorded` are in the audit trail; the rules come back seeded
+  (NY 12, NY workplace violence 12, IL 12, CA 24); both exports are
+  `text/csv`; publishing v2 supersedes the pending request and opens a
+  `new_version` round.
+- **Prod**: `/health` 200; `GET /v1/ack/<junk>` answers `404 ack_link_invalid`
+  from policies-worker over D1; org routes answer `401` without a session.
+  Signed-in checks need a real email (risk AS-I).
+- **Cron**: both `ackstack-policies-worker-stage` and `-prod` report the
+  schedules `*/10 * * * *` and `15 6 * * *` (Workers schedules API). The first
+  nightly run is after this record was written; its idempotency is proven by
+  a test that runs it twice on the same day over real SQLite.
 
 ## AS1 — as built
 
@@ -132,9 +156,10 @@ the code departed from `design.md`.
    not one per recipient, for the same D1 per-invocation query budget.
 7. **Under the baseline's `DEBUG_DELIVERY=true` profile the created links are
    also returned to the admin** (`debugLinks`), the same way identity-worker
-   returns login codes inline under that flag. Stage and prod both run that
-   profile today, because real email needs a verified sending domain (see
-   risks AS-I).
+   returns login codes inline under that flag. **Stage only**, matching the
+   baseline (identity-worker and membership-worker run `DEBUG_DELIVERY=false`
+   in prod). AS2 first shipped prod with the flag on; AS-5 (#13) turned it
+   off, so in production a link reaches staff only by email (see risks AS-I).
 8. **An audience matching nobody is `422`**, and assigning a policy with no
    published version is `409 policy_unpublished` — the design did not say.
 9. **Nightly idempotency is keyed on the round, not the acknowledgment row**
