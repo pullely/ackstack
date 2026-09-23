@@ -1,5 +1,15 @@
-import type { Policy, PolicyVersion, StaffMember } from "@saas/db/policies";
 import type {
+  AcknowledgmentView,
+  Assignment,
+  Policy,
+  PolicyVersion,
+  StaffMember,
+} from "@saas/db/policies";
+import type {
+  AcknowledgmentStatus,
+  AssignmentReason,
+  PublicAcknowledgment,
+  PublicAssignment,
   PolicyCategory,
   PolicyStatus,
   PublicPolicy,
@@ -7,7 +17,14 @@ import type {
   PublicStaffMember,
   StaffStatus,
 } from "@saas/contracts/policies";
-import { orgPublicId, policyPublicId, staffPublicId, versionPublicId } from "./ids.js";
+import {
+  acknowledgmentPublicId,
+  assignmentPublicId,
+  orgPublicId,
+  policyPublicId,
+  staffPublicId,
+  versionPublicId,
+} from "./ids.js";
 
 export function toPublicPolicy(row: Policy): PublicPolicy {
   return {
@@ -67,4 +84,40 @@ export function slugify(input: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 64);
+}
+
+export function toPublicAssignment(row: Assignment): PublicAssignment {
+  return {
+    id: assignmentPublicId(row.id),
+    orgId: orgPublicId(row.orgId),
+    policyId: policyPublicId(row.policyId),
+    versionId: versionPublicId(row.versionId),
+    reason: row.reason as AssignmentReason,
+    audience: row.audience,
+    dueAt: row.dueAt ? row.dueAt.toISOString() : null,
+    status: row.status as "open" | "closed",
+    createdAt: row.createdAt.toISOString(),
+    closedAt: row.closedAt ? row.closedAt.toISOString() : null,
+  };
+}
+
+export function toPublicAcknowledgment(row: AcknowledgmentView): PublicAcknowledgment {
+  return {
+    id: acknowledgmentPublicId(row.id),
+    assignmentId: assignmentPublicId(row.assignmentId),
+    policyId: policyPublicId(row.policyId),
+    policyTitle: row.policyTitle,
+    versionId: versionPublicId(row.versionId),
+    version: row.version,
+    staffId: staffPublicId(row.staffId),
+    staffName: row.staffName,
+    staffEmail: row.staffEmail,
+    staffWorkState: row.staffWorkState,
+    status: row.status as AcknowledgmentStatus,
+    sentAt: row.sentAt ? row.sentAt.toISOString() : null,
+    acknowledgedAt: row.acknowledgedAt ? row.acknowledgedAt.toISOString() : null,
+    ackIp: row.ackIp,
+    supersededAt: row.supersededAt ? row.supersededAt.toISOString() : null,
+    createdAt: row.createdAt.toISOString(),
+  };
 }

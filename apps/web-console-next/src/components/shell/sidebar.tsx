@@ -25,6 +25,9 @@ import {
   Plug,
   GitBranch,
   type LucideIcon,
+  FileText,
+  Send,
+  CalendarClock,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { buildNavSections, isLinkActive } from "./nav-items";
@@ -51,6 +54,9 @@ const ICONS: Record<string, LucideIcon> = {
   User2,
   Plug,
   GitBranch,
+  FileText,
+  Send,
+  CalendarClock,
 };
 
 /**

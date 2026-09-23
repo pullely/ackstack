@@ -169,10 +169,70 @@ const renderInvitationAccepted: TemplateRenderer = (data, opts) => {
   return { subject, html, text };
 };
 
+/**
+ * AS2 — a request to acknowledge a policy. The link is the message (the
+ * database keeps only its hash), so it travels in templateData the way the
+ * login code does for auth.magic_link.
+ */
+function renderPolicyAcknowledgment(kind: "request" | "reminder"): TemplateRenderer {
+  return (data, opts) => {
+    const staffName = str(data, "staffName");
+    const title = str(data, "policyTitle");
+    const version = str(data, "version");
+    const summary = str(data, "summary");
+    const due = formatTimestamp(str(data, "dueAt"));
+    const link = str(data, "link");
+    const brand = opts.brandName ?? "";
+    const subject =
+      kind === "reminder"
+        ? `Reminder: please acknowledge "${title}"`
+        : `Please read and acknowledge "${title}"`;
+    const greeting = staffName ? `Hi ${staffName},` : "Hello,";
+    const ask =
+      kind === "reminder"
+        ? `This is a reminder that your employer still needs your acknowledgment of "${title}" (version ${version}).`
+        : `Your employer has asked you to read and acknowledge "${title}" (version ${version}).`;
+    const dueLine = due ? `Please acknowledge by ${due}.` : "";
+    const noLogin = "No account or password is needed — the button opens the policy and records your acknowledgment.";
+
+    const text = [
+      greeting,
+      ask,
+      summary ? `Summary: ${summary}` : "",
+      dueLine,
+      `Open the policy: ${link}`,
+      noLogin,
+      "This link is personal to you. Please do not forward it.",
+    ]
+      .filter((line) => line.length > 0)
+      .join("\n\n");
+
+    const html = htmlShell(
+      kind === "reminder" ? "A policy still needs your acknowledgment" : "Please acknowledge a policy",
+      [
+        `<p style="margin:0 0 16px;font-size:14px;">${escapeHtml(greeting)}</p>`,
+        `<p style="margin:0 0 16px;font-size:14px;">${escapeHtml(ask)}</p>`,
+        summary
+          ? `<p style="margin:0 0 16px;font-size:14px;color:#3a3a4e;"><strong>Summary:</strong> ${escapeHtml(summary)}</p>`
+          : "",
+        dueLine ? `<p style="margin:0 0 16px;font-size:13px;color:#6b6b80;">${escapeHtml(dueLine)}</p>` : "",
+        `<p style="margin:0 0 24px;"><a href="${escapeHtml(link)}" style="display:inline-block;padding:12px 20px;background:#1a1a2e;color:#ffffff;border-radius:6px;text-decoration:none;font-size:14px;">Read and acknowledge</a></p>`,
+        `<p style="margin:0 0 8px;font-size:13px;color:#6b6b80;">${escapeHtml(noLogin)}</p>`,
+        '<p style="margin:0;font-size:13px;color:#6b6b80;">This link is personal to you. Please do not forward it.</p>',
+      ].join(""),
+      escapeHtml(brand ? `Sent by ${brand} on behalf of your employer` : "Sent on behalf of your employer."),
+    );
+
+    return { subject, html, text };
+  };
+}
+
 const TEMPLATES: Record<string, TemplateRenderer> = {
   "auth.magic_link": renderMagicLink,
   "invitation.created": renderInvitationCreated,
   "invitation.accepted": renderInvitationAccepted,
+  "policy.acknowledgment_request": renderPolicyAcknowledgment("request"),
+  "policy.acknowledgment_reminder": renderPolicyAcknowledgment("reminder"),
 };
 
 /**

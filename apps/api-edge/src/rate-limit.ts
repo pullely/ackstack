@@ -52,6 +52,7 @@ export type RouteFamily =
   | "org"
   | "project"
   | "policies"
+  | "ack"
   | "config"
   | "webhooks"
   | "metering"
@@ -98,6 +99,14 @@ const LIMITS: Record<RouteFamily, FamilyConfig> = {
   // projects, so the same ceiling.
   policies: {
     identity: { limit: 60, windowSec: 60 },
+    org: { limit: 300, windowSec: 60 },
+  },
+  // The public acknowledgment link: a member of staff opens it, maybe reads
+  // the document, and clicks once. Keyed by CF-Connecting-IP (no bearer), so
+  // a shop's shared Wi-Fi still has room; the org bucket never applies (the
+  // path carries no org).
+  ack: {
+    identity: { limit: 30, windowSec: 60 },
     org: { limit: 300, windowSec: 60 },
   },
   config: {

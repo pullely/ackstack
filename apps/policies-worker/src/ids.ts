@@ -41,3 +41,15 @@ export function staffPublicId(uuid: string): string {
 export function parseStaffPublicId(publicId: string): Uuid | null {
   return uuidFromPublicId(publicId, "stf");
 }
+
+export function assignmentPublicId(uuid: string): string {
+  return `asg_${uuidToHex(uuid)}`;
+}
+
+export function parseAssignmentPublicId(publicId: string): Uuid | null {
+  return uuidFromPublicId(publicId, "asg");
+}
+
+export function acknowledgmentPublicId(uuid: string): string {
+  return `ack_${uuidToHex(uuid)}`;
+}

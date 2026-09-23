@@ -192,5 +192,14 @@ export const manifest: MigrationManifest = {
       description:
         "Policy acknowledgments foundation (AS1) — the policy register, its immutable versions carrying both an R2 document key and a Markdown rendition, and the staff roster tagged by work state, location and role",
     },
+    {
+      id: "210_policies_assignments",
+      context: "policies",
+      path: "210_policies_assignments/up.sql",
+      checksum:
+        "b663e4f6ca93594f0b35cf53efded94837daa2cdbfaf8e7f21f7119aad5df14e",
+      description:
+        "Assignment rounds and acknowledgment requests (AS2) — one round per policy version and audience, one row per member of staff holding only the SHA-256 of their link token, recording the version, timestamp and IP on confirmation",
+    },
   ],
 };

@@ -1,0 +1,28 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: AS-3
+spec:
+  goal: A policy version is assigned to staff by state, location or role; each member of staff is emailed a personal no-login link; one click records the acknowledgment with its timestamp, IP and the exact policy version.
+  affects:
+    - default/ackstack/db
+    - default/ackstack/db-tests
+    - default/ackstack/db-migrate
+    - default/ackstack/contracts
+    - default/ackstack/contracts-tests
+    - default/ackstack/sdk
+    - default/ackstack/policies-worker
+    - default/ackstack/policies-worker-tests
+    - default/ackstack/api-edge
+    - default/ackstack/api-edge-tests
+    - default/ackstack/notifications-worker
+    - default/ackstack/notifications-worker-tests
+    - default/ackstack/web-console-next
+    - default/ackstack/web-console-next-tests
+  doneWhen:
+    - creating an assignment for an audience of { states ["NY"] } writes exactly one acknowledgment row per active NY member of staff and no others
+    - each recipient is handed a policy-acknowledgment-request email whose link opens the policy without any login
+    - confirming writes acknowledged_at, the CF-Connecting-IP value and the exact pov_ id, and returns a receipt
+    - replaying the same link returns 409 ack_already_recorded; an unknown or expired token returns 404 ack_link_invalid
+    - assignment.created, acknowledgment.sent and acknowledgment.recorded appear in the audit trail
+  gates: []

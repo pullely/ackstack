@@ -14,6 +14,7 @@ spec:
     - component: db-migrate
     - component: membership-worker
     - component: policy-worker
+    - component: notifications-worker
     - component: cloudflare-r2
   # BF6 wiring documents from orun secrets (SEC-JOB): lease-published by
   # the infra components; wire-live renders the wrangler template from

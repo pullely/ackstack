@@ -14,9 +14,18 @@ import { handleCreateStaff } from "./handlers/create-staff.js";
 import { handleListStaff } from "./handlers/list-staff.js";
 import { handleGetStaff } from "./handlers/get-staff.js";
 import { handleDeactivateStaff } from "./handlers/deactivate-staff.js";
+import { handleCreateAssignment } from "./handlers/create-assignment.js";
+import {
+  handleGetAssignment,
+  handleListAcknowledgments,
+  handleListAssignments,
+  handleRemindAssignment,
+} from "./handlers/assignments.js";
+import { handleGetAckDocument, handleGetAckLink, handlePostAckLink } from "./handlers/ack-link.js";
 import { notFound, methodNotAllowed, errorResponse } from "./http.js";
 import {
   generateRequestId,
+  parseAssignmentPublicId,
   parseOrgPublicId,
   parsePolicyPublicId,
   parseStaffPublicId,
@@ -58,6 +67,13 @@ const ORG_POLICY_VERSION_PUBLISH_RE =
   /^\/v1\/organizations\/([^/]+)\/policies\/([^/]+)\/versions\/([^/]+)\/publish$/;
 const ORG_STAFF_RE = /^\/v1\/organizations\/([^/]+)\/staff$/;
 const ORG_STAFF_ID_RE = /^\/v1\/organizations\/([^/]+)\/staff\/([^/]+)$/;
+const ORG_ASSIGNMENTS_RE = /^\/v1\/organizations\/([^/]+)\/assignments$/;
+const ORG_ASSIGNMENT_ID_RE = /^\/v1\/organizations\/([^/]+)\/assignments\/([^/]+)$/;
+const ORG_ASSIGNMENT_REMIND_RE = /^\/v1\/organizations\/([^/]+)\/assignments\/([^/]+)\/remind$/;
+const ORG_ACKNOWLEDGMENTS_RE = /^\/v1\/organizations\/([^/]+)\/acknowledgments$/;
+// The public lane: no actor, the token is the credential (api-edge ack-facade).
+const ACK_RE = /^\/v1\/ack\/([^/]+)$/;
+const ACK_DOCUMENT_RE = /^\/v1\/ack\/([^/]+)\/document$/;
 
 export async function route(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
@@ -66,6 +82,61 @@ export async function route(request: Request, env: Env): Promise<Response> {
   try {
     if (url.pathname === "/health" && request.method === "GET") {
       return handleHealth(env, requestId);
+    }
+
+    const ackDocumentMatch = url.pathname.match(ACK_DOCUMENT_RE);
+    if (ackDocumentMatch) {
+      if (request.method !== "GET") return methodNotAllowed(requestId);
+      return handleGetAckDocument(env, requestId, ackDocumentMatch[1]!);
+    }
+    const ackMatch = url.pathname.match(ACK_RE);
+    if (ackMatch) {
+      if (request.method === "GET") return handleGetAckLink(env, requestId, ackMatch[1]!);
+      if (request.method === "POST") return handlePostAckLink(request, env, requestId, ackMatch[1]!);
+      return methodNotAllowed(requestId);
+    }
+
+    const remindMatch = url.pathname.match(ORG_ASSIGNMENT_REMIND_RE);
+    if (remindMatch) {
+      const orgUuid = parseOrgPublicId(remindMatch[1]!);
+      const asgUuid = parseAssignmentPublicId(remindMatch[2]!);
+      if (!orgUuid || !asgUuid) return notFound(requestId, url.pathname);
+      if (request.method !== "POST") return methodNotAllowed(requestId);
+      const actor = resolveActor(request);
+      if (!actor) return unauthenticated(requestId);
+      return handleRemindAssignment(env, requestId, actor, orgUuid, asgUuid);
+    }
+
+    const assignmentIdMatch = url.pathname.match(ORG_ASSIGNMENT_ID_RE);
+    if (assignmentIdMatch) {
+      const orgUuid = parseOrgPublicId(assignmentIdMatch[1]!);
+      const asgUuid = parseAssignmentPublicId(assignmentIdMatch[2]!);
+      if (!orgUuid || !asgUuid) return notFound(requestId, url.pathname);
+      if (request.method !== "GET") return methodNotAllowed(requestId);
+      const actor = resolveActor(request);
+      if (!actor) return unauthenticated(requestId);
+      return handleGetAssignment(env, requestId, actor, orgUuid, asgUuid);
+    }
+
+    const assignmentsMatch = url.pathname.match(ORG_ASSIGNMENTS_RE);
+    if (assignmentsMatch) {
+      const orgUuid = parseOrgPublicId(assignmentsMatch[1]!);
+      if (!orgUuid) return notFound(requestId, url.pathname);
+      const actor = resolveActor(request);
+      if (!actor) return unauthenticated(requestId);
+      if (request.method === "POST") return handleCreateAssignment(request, env, requestId, actor, orgUuid);
+      if (request.method === "GET") return handleListAssignments(request, env, requestId, actor, orgUuid);
+      return methodNotAllowed(requestId);
+    }
+
+    const acknowledgmentsMatch = url.pathname.match(ORG_ACKNOWLEDGMENTS_RE);
+    if (acknowledgmentsMatch) {
+      const orgUuid = parseOrgPublicId(acknowledgmentsMatch[1]!);
+      if (!orgUuid) return notFound(requestId, url.pathname);
+      if (request.method !== "GET") return methodNotAllowed(requestId);
+      const actor = resolveActor(request);
+      if (!actor) return unauthenticated(requestId);
+      return handleListAcknowledgments(request, env, requestId, actor, orgUuid);
     }
 
     // Longest paths first: a version's /document and /publish would otherwise
