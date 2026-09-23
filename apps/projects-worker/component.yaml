@@ -69,3 +69,4 @@ spec:
     runtime: cloudflare
 # ci: re-trigger deploy (batch B — membership-dependents, 20260622T140838Z)
 # orun: redeploy 04-workers 20260923T043646Z
+# orun: redeploy AS1 — trap-16 D1 fix (events/membership repositories) + policy/staff permissions, 20260923T115754Z

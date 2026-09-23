@@ -72,6 +72,10 @@
           "service": "ackstack-projects-worker-stage"
         },
         {
+          "binding": "POLICIES_WORKER",
+          "service": "ackstack-policies-worker-stage"
+        },
+        {
           "binding": "EVENTS_WORKER",
           "service": "ackstack-events-worker-stage"
         },
@@ -140,6 +144,10 @@
         {
           "binding": "PROJECTS_WORKER",
           "service": "ackstack-projects-worker-prod"
+        },
+        {
+          "binding": "POLICIES_WORKER",
+          "service": "ackstack-policies-worker-prod"
         },
         {
           "binding": "EVENTS_WORKER",

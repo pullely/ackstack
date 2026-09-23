@@ -65,7 +65,9 @@ describe("buildNavSections under the Solo (M0) profile", () => {
     const org = buildNavSections({ orgSlug: "acme" }, true).find((s) => s.id === "org")!;
     expect(org.label).toBe("Account");
     const hrefs = org.links.map((l) => l.href);
-    expect(hrefs).toEqual(["/orgs/acme/settings"]); // only Settings survives
+    // Ackstack's Policies and Staff survive Solo — they are the product; of the
+    // baseline links only Settings does.
+    expect(hrefs).toEqual(["/orgs/acme/policies", "/orgs/acme/staff", "/orgs/acme/settings"]);
     expect(hrefs).not.toContain("/orgs/acme/projects");
     expect(hrefs).not.toContain("/orgs/acme/usage");
   });
@@ -79,6 +81,8 @@ describe("buildNavSections under the Solo (M0) profile", () => {
     const org = buildNavSections({ orgSlug: "acme" }, false).find((s) => s.id === "org")!;
     expect(org.label).toBe("Org · acme");
     expect(org.links.map((l) => l.href)).toEqual([
+      "/orgs/acme/policies",
+      "/orgs/acme/staff",
       "/orgs/acme/projects",
       "/orgs/acme/usage",
       "/orgs/acme/settings",

@@ -51,6 +51,7 @@ export type RouteFamily =
   | "auth"
   | "org"
   | "project"
+  | "policies"
   | "config"
   | "webhooks"
   | "metering"
@@ -89,6 +90,13 @@ const LIMITS: Record<RouteFamily, FamilyConfig> = {
     org: { limit: 300, windowSec: 60 },
   },
   project: {
+    identity: { limit: 60, windowSec: 60 },
+    org: { limit: 300, windowSec: 60 },
+  },
+  // Policy documents are uploaded one at a time by a human filling in a
+  // register, and read back by an auditor — the same shape of traffic as
+  // projects, so the same ceiling.
+  policies: {
     identity: { limit: 60, windowSec: 60 },
     org: { limit: 300, windowSec: 60 },
   },

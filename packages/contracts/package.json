@@ -23,7 +23,8 @@
     "./billing": "./src/billing.ts",
     "./notifications": "./src/notifications.ts",
     "./integrations": "./src/integrations.ts",
-    "./idempotency": "./src/idempotency.ts"
+    "./idempotency": "./src/idempotency.ts",
+    "./policies": "./src/policies.ts"
   },
   "scripts": {
     "build": "tsc --project tsconfig.build.json",

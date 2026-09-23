@@ -6,6 +6,7 @@ import { handlePreflight, applyCorsHeaders } from "./cors";
 import { isAuthRoute, handleAuthRoute } from "./auth-facade";
 import { isOrgRoute, handleOrgRoute } from "./org-facade";
 import { isProjectRoute, handleProjectRoute } from "./project-facade";
+import { isPoliciesRoute, handlePoliciesRoute } from "./policies-facade";
 import { isAuditRoute, handleAuditRoute } from "./audit-facade";
 import { isConfigRoute, handleConfigRoute } from "./config-facade";
 import { isWebhooksRoute, handleWebhooksRoute } from "./webhooks-facade";
@@ -70,6 +71,8 @@ export default {
       response = await handleBillingRoute(request, env, requestId, url.pathname);
     } else if (isProjectRoute(url.pathname)) {
       response = await handleProjectRoute(request, env, requestId, url.pathname);
+    } else if (isPoliciesRoute(url.pathname)) {
+      response = await handlePoliciesRoute(request, env, requestId, url.pathname);
     } else if (isOrgRoute(url.pathname)) {
       response = await handleOrgRoute(request, env, requestId, url.pathname);
     } else {

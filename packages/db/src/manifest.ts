@@ -183,5 +183,14 @@ export const manifest: MigrationManifest = {
       description:
         "Connection pointer on the inbound-delivery inbox (nullable connection_id + partial index) — lets the per-connection delivery log scope precisely; attributed by the IG2 cron drain",
     },
+    {
+      id: "200_policies_core",
+      context: "policies",
+      path: "200_policies_core/up.sql",
+      checksum:
+        "bf48d68020f76a77fed55d24902f56a2e84cca8b039f312fe477a7b95783aae4",
+      description:
+        "Policy acknowledgments foundation (AS1) — the policy register, its immutable versions carrying both an R2 document key and a Markdown rendition, and the staff roster tagged by work state, location and role",
+    },
   ],
 };

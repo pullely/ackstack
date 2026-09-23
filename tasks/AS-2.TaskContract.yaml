@@ -1,0 +1,40 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: AS-2
+spec:
+  goal: The policies bounded context exists — a versioned policy register whose documents live in R2, and a staff roster tagged by location, role and work state — served by a new policies-worker and visible in the console.
+  affects:
+    - default/ackstack/admin-worker
+    - default/ackstack/api-edge
+    - default/ackstack/api-edge-tests
+    - default/ackstack/billing-worker
+    - default/ackstack/cloudflare-r2
+    - default/ackstack/config-worker
+    - default/ackstack/contracts
+    - default/ackstack/db
+    - default/ackstack/db-migrate
+    - default/ackstack/db-tests
+    - default/ackstack/events-worker
+    - default/ackstack/identity-worker
+    - default/ackstack/integrations-worker
+    - default/ackstack/membership-worker
+    - default/ackstack/membership-worker-tests
+    - default/ackstack/policies-worker
+    - default/ackstack/policies-worker-tests
+    - default/ackstack/policy-engine
+    - default/ackstack/policy-engine-tests
+    - default/ackstack/policy-worker
+    - default/ackstack/projects-worker
+    - default/ackstack/sdk
+    - default/ackstack/web-console-next
+    - default/ackstack/web-console-next-tests
+    - default/ackstack/webhooks-worker
+  doneWhen:
+    - the 200_policies_core migration is applied on stage and prod and packages/db lists it
+    - the R2 bucket exists on stage and prod and its id resolves through a wiring token
+    - POST then GET /v1/organizations/{org}/policies round-trips on stage and prod
+    - a PDF PUT to .../versions/{pov}/document comes back byte-for-byte from GET of the same route
+    - a second PUT to a published version is refused 409 version_immutable
+    - a roster re-upload of the same email updates rather than duplicates
+  gates: []
