@@ -21,7 +21,7 @@ originating IP, and the whole trail exports per employee and per policy.
 
 | Field | Value |
 |-------|-------|
-| Status | ✅ Shipped |
+| Status | 🟡 Merged — final deploy pending (see IMPLEMENTATION-STATUS "Deploy state") |
 | Cluster | **AS** (AS0–AS3) |
 | Owner(s) | `apps/policies-worker` (the resource) · `packages/db` (the schema) · `packages/contracts` + `packages/sdk` (the wire) · `apps/api-edge` (the door) · `apps/web-console-next` (the surface) |
 | Builds on | `cirrus baseline-v12` — extends identity/membership (who may administer), notifications (the email), events/audit (the trail), config (per-org defaults) and the api-edge public lane |

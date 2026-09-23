@@ -1,0 +1,10 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: AS-6
+spec:
+  goal: The epic's README does not claim Shipped while the final milestone's deploy on main is only partly green (trap 25, the brokered-mint budget).
+  affects: []
+  doneWhen:
+    - README status reads Merged, deploy pending, with exactly what is and is not deployed, until the coordinator's rerun of runs 35862684138 and 35866983828 is fully green
+  gates: []
