@@ -21,6 +21,7 @@ import { useSession } from "@/lib/session";
 import { useApiQuery, qk } from "@/lib/query";
 import { useToast } from "@/components/ui/toast";
 import { wrap } from "@/lib/api";
+import { downloadCsv } from "@/lib/csv-download";
 import type { StaffInput } from "@saas/contracts/policies";
 
 export default function StaffPage() {
@@ -60,7 +61,7 @@ function parseRoster(text: string): { rows: StaffInput[]; errors: string[] } {
 }
 
 function Inner({ orgId }: { orgId: string }) {
-  const { client } = useSession();
+  const { client, target, token } = useSession();
   const { toast } = useToast();
   const [state, setState] = React.useState("");
   const staff = useApiQuery(qk.staff(orgId), () =>
@@ -194,6 +195,7 @@ function Inner({ orgId }: { orgId: string }) {
                   <th className="px-4 py-2 font-medium">Location</th>
                   <th className="px-4 py-2 font-medium">Role</th>
                   <th className="px-4 py-2 font-medium">Status</th>
+                  <th className="px-4 py-2 font-medium">Trail</th>
                 </tr>
               </thead>
               <tbody>
@@ -208,6 +210,18 @@ function Inner({ orgId }: { orgId: string }) {
                       <Badge variant={s.status === "active" ? "success" : "secondary"}>
                         {s.status}
                       </Badge>
+                    </td>
+                    <td className="px-4 py-2">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={async () => {
+                          const ok = await downloadCsv(target, token, `/v1/organizations/${encodeURIComponent(orgId)}/staff/${encodeURIComponent(s.id)}/export`);
+                          if (!ok) toast({ kind: "error", title: "Export failed" });
+                        }}
+                      >
+                        CSV
+                      </Button>
                     </td>
                   </tr>
                 ))}

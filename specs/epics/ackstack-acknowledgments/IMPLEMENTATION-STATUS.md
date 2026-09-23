@@ -8,7 +8,7 @@ the code departed from `design.md`.
 | AS0 — the spec | ✅ | AS-1 | #9 |
 | AS1 — the register and the roster | ✅ | AS-2 | #10 |
 | AS2 — assign, send, acknowledge | ✅ | AS-3 | #11 |
-| AS3 — the re-collection calendar | | | |
+| AS3 — the re-collection calendar | ✅ | AS-4 | #12 |
 
 ## AS1 — as built
 
@@ -43,6 +43,30 @@ the code departed from `design.md`.
   with tally and *Remind everyone pending*) and the public `/ack/{token}` page.
 - Events: `assignment.created`, `acknowledgment.sent`,
   `acknowledgment.recorded`, `assignment.reminded`.
+
+## AS3 — as built
+
+- Migration `220_policies_rules` (`policies_rules`, unique per org × state ×
+  category), repository `packages/db/src/policies/rules.ts` with the shipped
+  defaults: NY harassment 12 months, NY workplace violence 12 months (Retail
+  Worker Safety Act), IL harassment 12, CA harassment 24, and an org-wide
+  `*`/`*` default that ships disabled. Seeded per organization on first read
+  and by the nightly run.
+- The nightly cron `15 6 * * *` on `policies-worker` (beside AS2's `*/10`
+  sweep; `scheduled()` dispatches on `controller.cron`) walks every org with an
+  active policy, and per policy opens one `reason: 'scheduled'` round for the
+  active staff whose last acknowledgment is older than their governing
+  interval and who have nothing pending. Event `recollection.round.opened`.
+- Publishing a version supersedes every pending request for an older version
+  (`acknowledgment.superseded`, one aggregate event) and opens a
+  `reason: 'new_version'` round for everyone ever asked about the policy; the
+  publish response carries `superseded` and `newVersionRound`.
+- `GET|PUT /v1/organizations/{org}/rules[/{state}/{category}]` (`rule.updated`),
+  `GET …/policies/{pol}/export` and `GET …/staff/{stf}/export` (`text/csv`,
+  formula-injection-guarded, naming version, `pov_`, status, sent/acknowledged
+  timestamps and IP).
+- Console: **Calendar** (the rule grid by state × category, edit an interval,
+  toggle, add a rule) and CSV buttons on the policy dialog and each staff row.
 
 ## Departures from the design
 
@@ -113,4 +137,24 @@ the code departed from `design.md`.
    risks AS-I).
 8. **An audience matching nobody is `422`**, and assigning a policy with no
    published version is `409 policy_unpublished` — the design did not say.
+9. **Nightly idempotency is keyed on the round, not the acknowledgment row**
+   (AS3). risks AS-H planned a unique index over `(policy_id, staff_id,
+   reason, date(due_at))` on the acknowledgment. As built, a scheduled round
+   carries `schedule_key = scheduled:<pol_>:<UTC date>` under a partial unique
+   index `(org_id, schedule_key)`, and `INSERT … ON CONFLICT DO NOTHING
+   RETURNING` makes a second same-day run insert and send nothing. A second,
+   independent guard: anyone with a pending request for the policy is never a
+   candidate. Rounds are not auto-closed.
+10. **Governing-rule resolution**: `(state, category)` → `(state, *)` →
+    `(*, category)` → `(*, *)`; a *disabled* match stops the search (an
+    explicit "no re-collection here") rather than falling through.
+11. **Only staff who have acknowledged the policy before are re-collected.**
+    Someone never asked is the job of a hand-made round, not the calendar.
+12. **The nightly run is a single invocation over every org.** Fine at SMB
+    scale; a Queue fan-out per org is the upgrade path (risk AS-J).
 
+13. **CORS fix for AS1's console upload** (landed in AS3). The api-edge CORS
+    allow-list did not include `x-document-filename`, so a browser's preflight
+    for the console's `PUT …/document` would be refused even though the API
+    itself worked from a script. AS3 adds it, and exposes
+    `content-disposition` so the console's CSV download keeps its filename.

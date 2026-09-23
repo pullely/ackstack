@@ -1,4 +1,7 @@
 import type {
+  ListRulesResponse,
+  PutRuleRequest,
+  PutRuleResponse,
   AckLinkResponse,
   AckReceiptResponse,
   CreateAssignmentRequest,
@@ -272,6 +275,32 @@ export class PoliciesClient {
       {
         method: "POST",
         path: `/v1/organizations/${seg(orgId)}/assignments/${seg(assignmentId)}/remind`,
+      },
+      opts,
+    );
+  }
+
+  /** GET /v1/organizations/:orgId/rules — the re-collection calendar (seeded on first read). */
+  listRules(orgId: string, opts: RequestOptions = {}): Promise<ListRulesResponse> {
+    return this.transport.request<ListRulesResponse>(
+      { method: "GET", path: `/v1/organizations/${seg(orgId)}/rules` },
+      opts,
+    );
+  }
+
+  /** PUT /v1/organizations/:orgId/rules/:state/:category */
+  putRule(
+    orgId: string,
+    state: string,
+    category: string,
+    body: PutRuleRequest,
+    opts: RequestOptions = {},
+  ): Promise<PutRuleResponse> {
+    return this.transport.request<PutRuleResponse>(
+      {
+        method: "PUT",
+        path: `/v1/organizations/${seg(orgId)}/rules/${seg(state)}/${seg(category)}`,
+        body,
       },
       opts,
     );

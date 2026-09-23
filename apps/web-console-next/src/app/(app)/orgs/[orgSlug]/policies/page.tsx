@@ -23,6 +23,7 @@ import { useSession } from "@/lib/session";
 import { useApiQuery, qk } from "@/lib/query";
 import { useToast } from "@/components/ui/toast";
 import { wrap } from "@/lib/api";
+import { downloadCsv } from "@/lib/csv-download";
 import type {
   CreatePolicyRequest,
   PublicPolicy,
@@ -209,7 +210,7 @@ function VersionsDialog({
   onClose: () => void;
   onChanged: () => void;
 }) {
-  const { client } = useSession();
+  const { client, target, token } = useSession();
   const { toast } = useToast();
   const versions = useApiQuery(qk.policyVersions(orgId, policy.id), () =>
     wrap(async () => (await client.policies.listVersions(orgId, policy.id)).versions),
@@ -334,12 +335,23 @@ function VersionsDialog({
             </ul>
           )}
 
-          {!draft && (
-            <Button variant="secondary" disabled={busy} onClick={createDraft}>
-              <Plus className="h-4 w-4 mr-1.5" />
-              Start a new version
+          <div className="flex flex-wrap gap-2">
+            {!draft && (
+              <Button variant="secondary" disabled={busy} onClick={createDraft}>
+                <Plus className="h-4 w-4 mr-1.5" />
+                Start a new version
+              </Button>
+            )}
+            <Button
+              variant="secondary"
+              onClick={async () => {
+                const ok = await downloadCsv(target, token, `/v1/organizations/${encodeURIComponent(orgId)}/policies/${encodeURIComponent(policy.id)}/export`);
+                if (!ok) toast({ kind: "error", title: "Export failed" });
+              }}
+            >
+              Export acknowledgments (CSV)
             </Button>
-          )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

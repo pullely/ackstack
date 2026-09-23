@@ -159,6 +159,11 @@ export interface RoundsRepository {
     at: Date,
   ): Promise<PoliciesResult<Acknowledgment[]>>;
   listStaffEverAssigned(orgId: Uuid, policyId: Uuid): Promise<PoliciesResult<StaffMember[]>>;
+  /** Every acknowledgment row for a policy or a member of staff, newest first (the exports). */
+  listAllAcknowledgments(
+    orgId: Uuid,
+    filter: { policyId?: string; staffId?: string },
+  ): Promise<PoliciesResult<AcknowledgmentView[]>>;
 }
 
 /** D1 binds at most 100 parameters per statement; keep every IN list and multi-row insert under it. */
@@ -654,6 +659,30 @@ export function createRoundsRepository(executor: SqlExecutor): RoundsRepository 
         return { ok: true, value: result.rows.map(mapStaff) };
       } catch {
         return internal("Failed to list previously assigned staff");
+      }
+    },
+    async listAllAcknowledgments(orgId, filter) {
+      try {
+        const values: unknown[] = [orgId];
+        const where = ["a.org_id = $1"];
+        if (filter.policyId) {
+          values.push(filter.policyId);
+          where.push(`a.policy_id = $${values.length}`);
+        }
+        if (filter.staffId) {
+          values.push(filter.staffId);
+          where.push(`a.staff_id = $${values.length}`);
+        }
+        const result = await executor.execute<Record<string, unknown>>(
+          `${VIEW_SELECT}
+            WHERE ${where.join(" AND ")}
+            ORDER BY a.created_at DESC, a.id DESC
+            LIMIT 10000`,
+          values,
+        );
+        return { ok: true, value: result.rows.map(mapView) };
+      } catch {
+        return internal("Failed to list acknowledgments for export");
       }
     },
   };

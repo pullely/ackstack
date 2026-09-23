@@ -122,6 +122,10 @@ export interface GetPolicyVersionResponse {
 export interface PublishPolicyVersionResponse {
   version: PublicPolicyVersion;
   policy: PublicPolicy;
+  /** AS3: requests for an older version still pending when this one was published. */
+  superseded?: number;
+  /** AS3: the round that asks everyone previously assigned to acknowledge this version. */
+  newVersionRound?: { assignmentId: string; recipients: number } | null;
 }
 
 export interface AttachPolicyDocumentResponse {
@@ -275,4 +279,31 @@ export interface AckReceiptResponse {
     acknowledgedAt: string;
     staffName: string;
   };
+}
+
+// ---------------------------------------------------------------------------
+// AS3 — the re-collection calendar, supersession, the exports
+// ---------------------------------------------------------------------------
+
+export interface PublicRecollectionRule {
+  /** Two-letter state, or "*" for every state. */
+  state: string;
+  /** A policy category, or "*" for every category. */
+  category: string;
+  intervalMonths: number;
+  enabled: boolean;
+  updatedAt: string;
+}
+
+export interface ListRulesResponse {
+  rules: PublicRecollectionRule[];
+}
+
+export interface PutRuleRequest {
+  intervalMonths: number;
+  enabled?: boolean;
+}
+
+export interface PutRuleResponse {
+  rule: PublicRecollectionRule;
 }

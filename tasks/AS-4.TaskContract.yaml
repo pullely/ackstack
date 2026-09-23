@@ -1,0 +1,27 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: AS-4
+spec:
+  goal: Ackstack re-collects acknowledgments on each state's calendar with no human — NY annual (harassment and the Retail Worker Safety Act's workplace violence), IL annual, CA every two years — supersedes outstanding requests when a new version lands, and exports the trail per employee and per policy as CSV.
+  affects:
+    - default/ackstack/db
+    - default/ackstack/db-tests
+    - default/ackstack/db-migrate
+    - default/ackstack/contracts
+    - default/ackstack/contracts-tests
+    - default/ackstack/sdk
+    - default/ackstack/policies-worker
+    - default/ackstack/policies-worker-tests
+    - default/ackstack/api-edge
+    - default/ackstack/api-edge-tests
+    - default/ackstack/web-console-next
+    - default/ackstack/web-console-next-tests
+    - default/ackstack/cloudflare-r2
+  doneWhen:
+    - the nightly cron runs on stage and prod and is idempotent — a second run on the same day opens no duplicate round
+    - a member of staff whose last NY harassment acknowledgment is 13 months old is in the nightly round; one at 11 months is not; a California one at 13 months is not
+    - publishing a new version supersedes outstanding requests for the old one and opens a fresh round
+    - GET .../policies/{pol}/export and .../staff/{stf}/export return text/csv naming the version, the timestamp and the IP of every acknowledgment
+    - the console shows the rule grid by state and category and lets an admin change an interval
+  gates: []

@@ -109,6 +109,12 @@ run in the same day inserts nothing and sends nothing. The handler also closes
 each round it opens in the same transaction, and logs a count rather than
 failing loudly on a conflict.
 
+*As built (AS3):* the key moved to the round — `schedule_key =
+scheduled:<pol_>:<UTC date>`, unique per org — plus a second guard that
+excludes anyone with a pending request; rounds are not auto-closed. Proven by
+a test that runs the nightly job twice on the same day. See
+IMPLEMENTATION-STATUS departure 9.
+
 ## AS-I — email only reaches staff once a sending domain is verified (RISK, open)
 
 The request email goes through the baseline's `notifications-worker`, which

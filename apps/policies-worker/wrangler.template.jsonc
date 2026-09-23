@@ -9,8 +9,9 @@
   "main": "src/index.ts",
   "minify": false,
   // AS2: every ten minutes, send what a round left unsent.
+  // AS3: nightly at 06:15 UTC, open the due re-collection rounds.
   "triggers": {
-    "crons": ["*/10 * * * *"]
+    "crons": ["*/10 * * * *", "15 6 * * *"]
   },
   "vars": {
     "ENVIRONMENT": "local"
