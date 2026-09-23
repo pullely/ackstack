@@ -12,8 +12,9 @@ address. A guessed token would forge a signature; a forwarded one would let a
 colleague acknowledge on someone's behalf, which the product cannot detect at
 all. Mitigations: tokens are 128 bits from `crypto.getRandomValues`, so
 guessing is not a threat model; only the SHA-256 lands in D1, so a database
-read does not yield working links; the token lives in KV with a TTL and is
-deleted on use, so a link is single-use and expires; the edge rate-limits the
+read does not yield working links; confirmation is one conditional write on
+the hash with an expiry (as built in D1, not KV — see IMPLEMENTATION-STATUS),
+so a link is single-use and expires; the edge rate-limits the
 public lane by token and by IP, so enumeration is not viable; and the recorded
 IP and user agent give an auditor something to challenge. Forwarding remains
 undetectable and is called out in `AS-B`.
@@ -107,3 +108,24 @@ date(due_at))` through a unique index on the acknowledgment row, so a second
 run in the same day inserts nothing and sends nothing. The handler also closes
 each round it opens in the same transaction, and logs a count rather than
 failing loudly on a conflict.
+
+## AS-I — email only reaches staff once a sending domain is verified (RISK, open)
+
+The request email goes through the baseline's `notifications-worker`, which
+sends with Cloudflare Email Service from `no-reply@mail.ackstack.app`. That
+needs the `ackstack.app` domain on the account with DKIM/SPF verified, and
+we do not hold it — a credential-shaped gap, not code. Until it exists the
+worker falls back or records `notification.failed`, and every other part of
+the flow works. Mitigation in place: stage and prod run the baseline's
+`DEBUG_DELIVERY=true` profile, under which the admin who sends a round gets
+the links back and can hand them out, and the round's detail view shows who
+is still pending. Turning it off is a one-line var change once the domain is
+verified.
+
+## AS-J — large rounds are sent over several invocations (ACCEPTED)
+
+One invocation hands at most 40 emails to the mailer (subrequest and D1
+per-invocation limits); the rest go out on the ten-minute sweep with fresh
+links. A 300-person round therefore takes about an hour to fully send. Fine
+for an SMB roster; a Queue-backed fan-out is the upgrade path if it is not.
+

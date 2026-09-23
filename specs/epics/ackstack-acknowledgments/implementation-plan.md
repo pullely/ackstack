@@ -45,7 +45,7 @@ milestone is invisible to staff.
 - the console shows the register, a version history and the roster
 - the worker's unit tests and the repo's typecheck and lint lanes are green
 
-## AS2 — assign, send, acknowledge
+## AS2 — assign, send, acknowledge ✅
 
 The round becomes a resource and a member of staff sees Ackstack for the first
 time. A second migration adds `policies_assignments` and
