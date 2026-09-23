@@ -1,7 +1,7 @@
 # cloudflare-r2
 
 Provisions the R2 bucket that holds policy documents, one per environment
-(`stg-ackstack-policy-docs-stage`, `prod-ackstack-policy-docs-prod` — the runner prefixes `namespacePrefix`).
+(`ackstack-policy-docs-stage`, `ackstack-policy-docs-prod`).
 
 The bucket is private. Nothing reads it directly: `apps/policies-worker` binds
 it as `POLICY_DOCS` and is the only reader, authorizing each read either by an
