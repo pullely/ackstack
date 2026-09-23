@@ -22,7 +22,7 @@ import { MeteringClient } from "./metering.js";
 import { NotificationsClient } from "./notifications.js";
 import { OrganizationsClient } from "./organizations.js";
 import { ProjectsClient } from "./projects.js";
-import { PoliciesClient } from "./policies.js";
+import { AckClient, PoliciesClient } from "./policies.js";
 import { SecurityEventsClient } from "./securityEvents.js";
 import { WebhooksClient } from "./webhooks.js";
 import { Transport, type ClientOptions } from "./transport.js";
@@ -31,6 +31,8 @@ export class Ackstack {
   readonly organizations: OrganizationsClient;
   readonly projects: ProjectsClient;
   readonly policies: PoliciesClient;
+  /** The unauthenticated acknowledgment-link lane (the token is the credential). */
+  readonly ack: AckClient;
   readonly environments: EnvironmentsClient;
   readonly memberships: MembershipsClient;
   readonly apiKeys: ApiKeysClient;
@@ -51,6 +53,7 @@ export class Ackstack {
     this.organizations = new OrganizationsClient(this.transport);
     this.projects = new ProjectsClient(this.transport);
     this.policies = new PoliciesClient(this.transport);
+    this.ack = new AckClient(this.transport);
     this.environments = new EnvironmentsClient(this.transport);
     this.memberships = new MembershipsClient(this.transport);
     this.apiKeys = new ApiKeysClient(this.transport);
@@ -69,7 +72,7 @@ export class Ackstack {
 // Resource clients (also reachable via `client.<resource>`).
 export { OrganizationsClient } from "./organizations.js";
 export { ProjectsClient } from "./projects.js";
-export { PoliciesClient } from "./policies.js";
+export { AckClient, PoliciesClient } from "./policies.js";
 export { EnvironmentsClient } from "./environments.js";
 export { MembershipsClient } from "./memberships.js";
 export {
@@ -319,6 +322,18 @@ export type {
 } from "@saas/contracts/auth";
 
 export type {
+  PublicAssignment,
+  PublicAcknowledgment,
+  AssignmentAudience,
+  AcknowledgmentTally,
+  CreateAssignmentRequest,
+  CreateAssignmentResponse,
+  ListAssignmentsResponse,
+  GetAssignmentResponse,
+  RemindAssignmentResponse,
+  ListAcknowledgmentsResponse,
+  AckLinkResponse,
+  AckReceiptResponse,
   PublicPolicy,
   PublicPolicyVersion,
   PublicStaffMember,

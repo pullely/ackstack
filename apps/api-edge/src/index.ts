@@ -7,6 +7,7 @@ import { isAuthRoute, handleAuthRoute } from "./auth-facade";
 import { isOrgRoute, handleOrgRoute } from "./org-facade";
 import { isProjectRoute, handleProjectRoute } from "./project-facade";
 import { isPoliciesRoute, handlePoliciesRoute } from "./policies-facade";
+import { isAckRoute, handleAckRoute } from "./ack-facade";
 import { isAuditRoute, handleAuditRoute } from "./audit-facade";
 import { isConfigRoute, handleConfigRoute } from "./config-facade";
 import { isWebhooksRoute, handleWebhooksRoute } from "./webhooks-facade";
@@ -45,6 +46,10 @@ export default {
       // reads as "not found" to the single-user surface. Flip SOLO_MODE off and
       // this branch is dead, restoring the full baseline. (See ./solo-mode.ts.)
       response = notFound(requestId, url.pathname);
+    } else if (isAckRoute(url.pathname)) {
+      // Public acknowledgment links (no session) — the token is verified
+      // against its stored hash in policies-worker.
+      response = await handleAckRoute(request, env, requestId, url.pathname);
     } else if (isAuthRoute(url.pathname)) {
       response = await handleAuthRoute(request, env, requestId, url.pathname);
     } else if (isAuditRoute(url.pathname)) {

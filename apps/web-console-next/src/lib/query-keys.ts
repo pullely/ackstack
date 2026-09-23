@@ -14,6 +14,9 @@ export const qk = {
   policyVersions: (orgId: string, policyId: string) =>
     ["policyVersions", orgId, policyId] as const,
   staff: (orgId: string) => ["staff", orgId] as const,
+  assignments: (orgId: string) => ["assignments", orgId] as const,
+  assignment: (orgId: string, assignmentId: string) =>
+    ["assignment", orgId, assignmentId] as const,
   environments: (orgId: string, projectId: string) =>
     ["environments", orgId, projectId] as const,
   members: (orgId: string) => ["members", orgId] as const,

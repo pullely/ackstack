@@ -14,6 +14,7 @@ spec:
     - component: db-migrate
     - component: membership-worker
     - component: policy-worker
+    - component: notifications-worker
     - component: cloudflare-r2
   # BF6 wiring documents from orun secrets (SEC-JOB): lease-published by
   # the infra components; wire-live renders the wrangler template from
@@ -53,8 +54,9 @@ spec:
     turboFilter: "@saas/policies-worker"
     wranglerConfig: wrangler.jsonc
     wranglerTemplate: wrangler.template.jsonc
-    # The R2 bucket binds by NAME, which cloudflare-r2 derives deterministically,
-    # so only D1 needs a wiring document.
+    # The R2 bucket binds by NAME, which cloudflare-r2 derives deterministically
+    # (stg-ackstack-policy-docs-stage / prod-ackstack-policy-docs-prod — the
+    # runner injects namespacePrefix), so only D1 needs a wiring document.
     wiringComponents: "cloudflare-d1"
     wiringEnvs: "stage,prod"
     wiringFixture: wiring.fixture.json

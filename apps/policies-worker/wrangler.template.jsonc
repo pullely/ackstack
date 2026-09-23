@@ -8,6 +8,10 @@
   "compatibility_flags": ["nodejs_compat"],
   "main": "src/index.ts",
   "minify": false,
+  // AS2: every ten minutes, send what a round left unsent.
+  "triggers": {
+    "crons": ["*/10 * * * *"]
+  },
   "vars": {
     "ENVIRONMENT": "local"
   },
@@ -20,7 +24,13 @@
     "stage": {
       "workers_dev": false,
       "vars": {
-        "ENVIRONMENT": "stage"
+        "ENVIRONMENT": "stage",
+        // AS2: the emailed link opens the console's public /ack/<token> page.
+        "ACK_LINK_BASE_URL": "https://ackstack-web-console-next-stage.nexo-7be.workers.dev",
+        // The baseline's inline-delivery profile (identity-worker returns login
+        // codes inline under the same flag): created links are also returned
+        // to the admin who sent them.
+        "DEBUG_DELIVERY": "true"
       },
       "d1_databases": [
         {
@@ -30,11 +40,12 @@
         }
       ],
       // AS1: policy documents. Bound by name — cloudflare-r2 names the bucket
-      // deterministically as ackstack-policy-docs-<env>.
+      // deterministically as <namespacePrefix>ackstack-policy-docs-<env>, and
+      // the runner injects namespacePrefix per environment ("stg-" / "prod-").
       "r2_buckets": [
         {
           "binding": "POLICY_DOCS",
-          "bucket_name": "ackstack-policy-docs-stage"
+          "bucket_name": "stg-ackstack-policy-docs-stage"
         }
       ],
       "services": [
@@ -45,13 +56,23 @@
         {
           "binding": "POLICY_WORKER",
           "service": "ackstack-policy-worker-stage"
+        },
+        {
+          "binding": "NOTIFICATIONS_WORKER",
+          "service": "ackstack-notifications-worker-stage"
         }
       ]
     },
     "prod": {
       "workers_dev": false,
       "vars": {
-        "ENVIRONMENT": "prod"
+        "ENVIRONMENT": "prod",
+        // AS2: the emailed link opens the console's public /ack/<token> page.
+        "ACK_LINK_BASE_URL": "https://ackstack-web-console-next-prod.nexo-7be.workers.dev",
+        // The baseline's inline-delivery profile (identity-worker returns login
+        // codes inline under the same flag): created links are also returned
+        // to the admin who sent them.
+        "DEBUG_DELIVERY": "true"
       },
       "d1_databases": [
         {
@@ -61,11 +82,12 @@
         }
       ],
       // AS1: policy documents. Bound by name — cloudflare-r2 names the bucket
-      // deterministically as ackstack-policy-docs-<env>.
+      // deterministically as <namespacePrefix>ackstack-policy-docs-<env>, and
+      // the runner injects namespacePrefix per environment ("stg-" / "prod-").
       "r2_buckets": [
         {
           "binding": "POLICY_DOCS",
-          "bucket_name": "ackstack-policy-docs-prod"
+          "bucket_name": "prod-ackstack-policy-docs-prod"
         }
       ],
       "services": [
@@ -76,6 +98,10 @@
         {
           "binding": "POLICY_WORKER",
           "service": "ackstack-policy-worker-prod"
+        },
+        {
+          "binding": "NOTIFICATIONS_WORKER",
+          "service": "ackstack-notifications-worker-prod"
         }
       ]
     }

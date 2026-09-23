@@ -1,4 +1,12 @@
 import type {
+  AckLinkResponse,
+  AckReceiptResponse,
+  CreateAssignmentRequest,
+  CreateAssignmentResponse,
+  GetAssignmentResponse,
+  ListAcknowledgmentsResponse,
+  ListAssignmentsResponse,
+  RemindAssignmentResponse,
   AttachPolicyDocumentResponse,
   CreatePolicyRequest,
   CreatePolicyResponse,
@@ -211,6 +219,96 @@ export class PoliciesClient {
   ): Promise<UpdateStaffResponse> {
     return this.transport.request<UpdateStaffResponse>(
       { method: "DELETE", path: `/v1/organizations/${seg(orgId)}/staff/${seg(staffId)}` },
+      opts,
+    );
+  }
+
+  /** POST /v1/organizations/:orgId/assignments — resolve the audience, send the round. */
+  createAssignment(
+    orgId: string,
+    body: CreateAssignmentRequest,
+    opts: RequestOptions = {},
+  ): Promise<CreateAssignmentResponse> {
+    return this.transport.request<CreateAssignmentResponse>(
+      { method: "POST", path: `/v1/organizations/${seg(orgId)}/assignments`, body },
+      opts,
+    );
+  }
+
+  /** GET /v1/organizations/:orgId/assignments */
+  listAssignments(
+    orgId: string,
+    query: { policyId?: string; status?: string } = {},
+    opts: RequestOptions = {},
+  ): Promise<ListAssignmentsResponse> {
+    return this.transport.request<ListAssignmentsResponse>(
+      { method: "GET", path: `/v1/organizations/${seg(orgId)}/assignments`, query },
+      opts,
+    );
+  }
+
+  /** GET /v1/organizations/:orgId/assignments/:assignmentId — tally and recipients. */
+  getAssignment(
+    orgId: string,
+    assignmentId: string,
+    opts: RequestOptions = {},
+  ): Promise<GetAssignmentResponse> {
+    return this.transport.request<GetAssignmentResponse>(
+      {
+        method: "GET",
+        path: `/v1/organizations/${seg(orgId)}/assignments/${seg(assignmentId)}`,
+      },
+      opts,
+    );
+  }
+
+  /** POST /v1/organizations/:orgId/assignments/:assignmentId/remind */
+  remindAssignment(
+    orgId: string,
+    assignmentId: string,
+    opts: RequestOptions = {},
+  ): Promise<RemindAssignmentResponse> {
+    return this.transport.request<RemindAssignmentResponse>(
+      {
+        method: "POST",
+        path: `/v1/organizations/${seg(orgId)}/assignments/${seg(assignmentId)}/remind`,
+      },
+      opts,
+    );
+  }
+
+  /** GET /v1/organizations/:orgId/acknowledgments */
+  listAcknowledgments(
+    orgId: string,
+    query: { policyId?: string; staffId?: string; status?: string } = {},
+    opts: RequestOptions = {},
+  ): Promise<ListAcknowledgmentsResponse> {
+    return this.transport.request<ListAcknowledgmentsResponse>(
+      { method: "GET", path: `/v1/organizations/${seg(orgId)}/acknowledgments`, query },
+      opts,
+    );
+  }
+}
+
+/**
+ * The acknowledgment link — unauthenticated. The token in the path is the
+ * credential; construct the client without auth.
+ */
+export class AckClient {
+  constructor(private readonly transport: Transport) {}
+
+  /** GET /v1/ack/:token */
+  get(token: string, opts: RequestOptions = {}): Promise<AckLinkResponse> {
+    return this.transport.request<AckLinkResponse>(
+      { method: "GET", path: `/v1/ack/${seg(token)}` },
+      opts,
+    );
+  }
+
+  /** POST /v1/ack/:token — 409 `ack_already_recorded` after the first time. */
+  acknowledge(token: string, opts: RequestOptions = {}): Promise<AckReceiptResponse> {
+    return this.transport.request<AckReceiptResponse>(
+      { method: "POST", path: `/v1/ack/${seg(token)}` },
       opts,
     );
   }

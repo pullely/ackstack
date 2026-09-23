@@ -14,6 +14,10 @@ const ORG_POLICY_VERSION_PUBLISH_RE =
   /^\/v1\/organizations\/[^/]+\/policies\/[^/]+\/versions\/[^/]+\/publish$/;
 const ORG_STAFF_RE = /^\/v1\/organizations\/[^/]+\/staff$/;
 const ORG_STAFF_ID_RE = /^\/v1\/organizations\/[^/]+\/staff\/[^/]+$/;
+const ORG_ASSIGNMENTS_RE = /^\/v1\/organizations\/[^/]+\/assignments$/;
+const ORG_ASSIGNMENT_ID_RE = /^\/v1\/organizations\/[^/]+\/assignments\/[^/]+$/;
+const ORG_ASSIGNMENT_REMIND_RE = /^\/v1\/organizations\/[^/]+\/assignments\/[^/]+\/remind$/;
+const ORG_ACKNOWLEDGMENTS_RE = /^\/v1\/organizations\/[^/]+\/acknowledgments$/;
 
 const FORWARDED_HEADERS = [
   "content-type",
@@ -35,6 +39,10 @@ const ROUTES: ReadonlyArray<{ re: RegExp; methods: readonly string[] }> = [
   { re: ORG_POLICIES_RE, methods: ["POST", "GET"] },
   { re: ORG_STAFF_ID_RE, methods: ["GET", "DELETE"] },
   { re: ORG_STAFF_RE, methods: ["POST", "GET"] },
+  { re: ORG_ASSIGNMENT_REMIND_RE, methods: ["POST"] },
+  { re: ORG_ASSIGNMENT_ID_RE, methods: ["GET"] },
+  { re: ORG_ASSIGNMENTS_RE, methods: ["POST", "GET"] },
+  { re: ORG_ACKNOWLEDGMENTS_RE, methods: ["GET"] },
 ];
 
 export function isPoliciesRoute(pathname: string): boolean {
