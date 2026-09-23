@@ -60,6 +60,14 @@ interface PerformInput {
   path: string;
   query?: Record<string, string | number | undefined> | undefined;
   body?: unknown;
+  /**
+   * A body that is NOT JSON — a policy document on its way to R2, say. It is
+   * sent verbatim, and the caller supplies the `content-type` through
+   * `headers`, because the transport has no way to guess it.
+   */
+  rawBody?: BodyInit;
+  /** Per-call header overrides, applied before `opts.headers`. */
+  headers?: Record<string, string>;
 }
 
 /**
@@ -125,9 +133,14 @@ export class Transport {
     if (this.auth) applyAuth(headers, this.auth);
 
     let body: BodyInit | undefined;
-    if (input.body !== undefined) {
+    if (input.rawBody !== undefined) {
+      body = input.rawBody;
+    } else if (input.body !== undefined) {
       headers.set("content-type", "application/json");
       body = JSON.stringify(input.body);
+    }
+    if (input.headers) {
+      for (const [k, v] of Object.entries(input.headers)) headers.set(k, v);
     }
 
     headers.set("accept", "application/json");

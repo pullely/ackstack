@@ -19,6 +19,7 @@
     "./notifications": "./src/notifications/index.ts",
     "./support": "./src/support/index.ts",
     "./integrations": "./src/integrations/index.ts",
+    "./policies": "./src/policies/index.ts",
     "./runner": "./src/runner/index.ts",
     "./d1": "./src/d1/index.ts",
     "./json": "./src/json.ts"

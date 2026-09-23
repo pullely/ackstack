@@ -686,7 +686,8 @@ describe("listEffectivePermissions", () => {
     expect(result.derivedScope.orgId).toBe("org_1");
 
     const allowed = result.permissions.filter((p) => p.allow);
-    expect(allowed.length).toBe(31);
+    // 31 in the baseline, plus the four AS1 actions (policy/staff × read/write).
+    expect(allowed.length).toBe(35);
   });
 
   it("returns limited permissions for viewer", () => {
@@ -701,7 +702,9 @@ describe("listEffectivePermissions", () => {
       "organization.config.read",
       "organization.integration.read",
       "organization.metering.read",
+      "organization.policy.read",
       "organization.read",
+      "organization.staff.read",
       "organization.webhook.read",
       "project.list",
       "project.webhook.read",

@@ -1,0 +1,26 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: AS-2
+spec:
+  goal: The policies bounded context exists — a versioned policy register whose documents live in R2, and a staff roster tagged by location, role and work state — served by a new policies-worker and visible in the console.
+  affects:
+    - packages/db
+    - packages/contracts
+    - packages/sdk
+    - packages/policy-engine
+    - apps/policies-worker
+    - apps/api-edge
+    - apps/web-console-next
+    - infra/terraform/cloudflare-r2
+    - tests
+    - .gitignore
+    - specs/epics/ackstack-acknowledgments
+  doneWhen:
+    - the 200_policies_core migration is applied on stage and prod and packages/db lists it
+    - the R2 bucket exists on stage and prod and its id resolves through a wiring token
+    - POST then GET /v1/organizations/{org}/policies round-trips on stage and prod
+    - a PDF PUT to .../versions/{pov}/document comes back byte-for-byte from GET of the same route
+    - a second PUT to a published version is refused 409 version_immutable
+    - a roster re-upload of the same email updates rather than duplicates
+  gates: []

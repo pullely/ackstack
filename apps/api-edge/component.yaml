@@ -13,6 +13,7 @@ spec:
     - component: cloudflare-d1
     - component: cloudflare-kv
     - component: projects-worker
+    - component: policies-worker
     - component: events-worker
     - component: config-worker
     - component: webhooks-worker

@@ -26,10 +26,17 @@ describe("Integrations Migration Verification", () => {
     );
   });
 
-  it("orders the integrations migrations at the manifest tail", () => {
+  it("orders 190 immediately after 180", () => {
+    // This asserted that the two integrations migrations were the LAST two in
+    // the manifest, which encoded "the baseline has not been extended yet" —
+    // it broke the moment AS1 appended 200_policies_core. What actually
+    // matters is that the delivery-attribution migration follows the
+    // foundation it alters, and that both keep their place in the ordering.
     const ids = manifest.migrations.map((m) => m.id);
-    expect(ids.indexOf("180_integrations_foundation")).toBe(ids.length - 2);
-    expect(ids.indexOf("190_integrations_delivery_attribution")).toBe(ids.length - 1);
+    const foundation = ids.indexOf("180_integrations_foundation");
+    const attribution = ids.indexOf("190_integrations_delivery_attribution");
+    expect(foundation).toBeGreaterThanOrEqual(0);
+    expect(attribution).toBe(foundation + 1);
   });
 
   it("manifest checksums match the on-disk up.sql files", () => {
