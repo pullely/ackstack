@@ -40,11 +40,12 @@
         }
       ],
       // AS1: policy documents. Bound by name — cloudflare-r2 names the bucket
-      // deterministically as ackstack-policy-docs-<env>.
+      // deterministically as <namespacePrefix>ackstack-policy-docs-<env>, and
+      // the runner injects namespacePrefix per environment ("stg-" / "prod-").
       "r2_buckets": [
         {
           "binding": "POLICY_DOCS",
-          "bucket_name": "ackstack-policy-docs-stage"
+          "bucket_name": "stg-ackstack-policy-docs-stage"
         }
       ],
       "services": [
@@ -81,11 +82,12 @@
         }
       ],
       // AS1: policy documents. Bound by name — cloudflare-r2 names the bucket
-      // deterministically as ackstack-policy-docs-<env>.
+      // deterministically as <namespacePrefix>ackstack-policy-docs-<env>, and
+      // the runner injects namespacePrefix per environment ("stg-" / "prod-").
       "r2_buckets": [
         {
           "binding": "POLICY_DOCS",
-          "bucket_name": "ackstack-policy-docs-prod"
+          "bucket_name": "prod-ackstack-policy-docs-prod"
         }
       ],
       "services": [

@@ -18,7 +18,8 @@ the code departed from `design.md`.
   roster CRUD with upsert-by-email), behind `apps/api-edge`'s
   `policies-facade.ts` on the `policies` rate-limit family.
 - `infra/terraform/cloudflare-r2`: one private bucket per environment,
-  `ackstack-policy-docs-<env>`, with a self-healing `adopt.tf` import.
+  `stg-ackstack-policy-docs-stage` / `prod-ackstack-policy-docs-prod`, with a
+  self-healing `adopt.tf` import.
 - Four new org actions, `organization.{policy,staff}.{read,write}`: owners and
   admins get all four, builders and viewers the two reads.
 - Console: **Policies** (register, version history, upload-and-publish) and
@@ -71,8 +72,13 @@ the code departed from `design.md`.
 1. **The R2 bucket binds by name, not through a `@@wiring(...)@@` token.**
    design.md §4 and the AS1 plan said the bucket id would be published as a
    wiring secret. An R2 binding resolves by bucket *name*, and the terraform
-   names the bucket deterministically (`ackstack-policy-docs-<env>`), so the
-   worker's `wrangler.template.jsonc` names it directly. That removes a
+   names the bucket deterministically, so the worker's
+   `wrangler.template.jsonc` names it directly. The name is
+   `<namespacePrefix>ackstack-policy-docs-<env>`, and the runner injects
+   `namespacePrefix` per environment — the real buckets are
+   `stg-ackstack-policy-docs-stage` and `prod-ackstack-policy-docs-prod`. AS1
+   first shipped the unprefixed names and its policies-worker deploy failed
+   with `R2 bucket … not found [code: 10085]`; fixed in the AS2 PR (#11). That removes a
    first-deploy ordering hazard (the worker lane resolving a
    `WIRING_CLOUDFLARE_R2` secret before the first apply has published it).
    The terraform still publishes the wiring document for anything that wants
