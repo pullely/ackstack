@@ -11,27 +11,25 @@ the code departed from `design.md`.
 | AS3 — the re-collection calendar | ✅ | AS-4 | #12 |
 | AS3 follow-up — prod delivery profile, shipped record | ✅ | AS-5 | #13 |
 
-## Deploy state — NOT fully shipped yet (2026-09-23, ~13:45Z)
+## Deploy state — ✅ fully deployed (2026-09-24, 05:30Z)
 
-All of AS0–AS3 and the AS-5 follow-up are **merged** (#9–#13). The last two
-deploy runs on `main` are only partly green: the workspace exhausted its
-**200 brokered credentials per rolling 24 h** (every CI job that reads a
-brokered Cloudflare secret spends one; the bootstrap alone used ~72), and jobs
-fail with `broker: limit_reached`. Per the coordinator, they are not rerun
-until the budget frees (~04:20Z on 2026-09-24).
+All of AS0–AS3 and the AS-5 follow-up (#9–#13) are merged **and deployed** on
+stage and prod. The two runs that hit the brokered-mint budget on 2026-09-23
+were rerun once the budget freed (2026-09-24 ~04:58Z, 48/200 free):
+**35866983828** (AS-5) went fully green; **35862684138** (AS3) went green on
+every lane except `api-edge · prod · Verify deploy`, whose attempt-4 job is
+stuck `queued` three times over (runbook trap 32) — GitHub will not start it
+and a job-level rerun did not take. The deploy itself **did** happen: Cloudflare
+reports `ackstack-api-edge-prod` modified 2026-09-24T05:00:48Z. The verify step
+was therefore done by hand, below.
 
-| Component | stage | prod |
-|---|---|---|
-| db-migrate (200/210/220 applied) | ✅ | ✅ |
-| cloudflare-r2 buckets | ✅ | ✅ |
-| policies-worker | ✅ AS3 code | ✅ AS3 code, **but still `DEBUG_DELIVERY=true`** — the AS-5 fix (#13) did not deploy |
-| api-edge | ✅ AS3 (rules, exports, CORS fix) | ⚠️ AS2 — AS3's rules/export routes and the CORS fix are not live |
-| web-console-next | ⚠️ AS2 (no Calendar page, no CSV buttons) | ⚠️ AS2 |
-
-Runs to rerun (`gh run rerun <id> --failed`): **35862684138** (AS3: api-edge
-prod, web-console-next stage + prod) and **35866983828** (AS-5:
-policies-worker stage + prod). Flip the README back to ✅ Shipped only when
-both are fully green.
+| Component | stage | prod | how it was checked |
+|---|---|---|---|
+| db-migrate (200/210/220 applied) | ✅ | ✅ | deploy run |
+| cloudflare-r2 buckets | ✅ | ✅ | deploy run |
+| policies-worker | ✅ AS3 + AS-5 | ✅ AS3 + AS-5, **`DEBUG_DELIVERY=false`** | Cloudflare script settings, read directly |
+| api-edge | ✅ AS3 | ✅ AS3 | AS3-only routes `/rules`, `/policies/{id}/export`, `/staff/{id}/export` answer **401** (route exists, needs auth) while an unknown route answers **404**, identically on stage and prod; CORS preflight allows `x-document-filename` on both |
+| web-console-next | ✅ AS3 | ✅ AS3 | deploy run; Cloudflare modified 05:00:40Z / 05:02:46Z |
 
 ## Verified live (2026-09-23)
 

@@ -1,0 +1,11 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: AS-7
+spec:
+  goal: The epic's README reads Shipped once every milestone is deployed on stage and prod, with the evidence for the one deploy lane verified by hand.
+  affects: []
+  doneWhen:
+    - README status reads Shipped
+    - IMPLEMENTATION-STATUS Deploy state shows every component deployed on stage and prod and how each was checked
+  gates: []
