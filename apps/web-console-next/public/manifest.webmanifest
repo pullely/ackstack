@@ -1,11 +1,19 @@
 {
   "name": "Ackstack Console",
   "short_name": "Ackstack",
-  "description": "Control plane for your projects, environments, and entitlements.",
+  "description": "Send policies, collect e-acknowledgments and re-collect them automatically on each state's schedule",
   "start_url": "/orgs",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#09090b",
-  "theme_color": "#09090b",
-  "orientation": "portrait-primary"
+  "background_color": "#fdfdfc",
+  "theme_color": "#fdfdfc",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
 }
